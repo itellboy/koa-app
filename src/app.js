@@ -3,14 +3,10 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const bodyparser = require('koa-bodyparser');
 
-
-
 const app = new Koa();
 const router = new Router();
-
+// 所有的课程数据
 let lessonData = [];
-
-
 
 router.get('/', async (ctx, next) => {
   ctx.type = 'html';
@@ -20,7 +16,28 @@ router.get('/', async (ctx, next) => {
 router.post('/lessons', async (ctx, next) => {
   ctx.type = "json";
 
-  ctx.response.body = lessonData;
+  let currentPage = ctx.request.body.currentPage;
+  let pageSize = ctx.request.body.pageSize;
+  let keywords = ctx.request.body.keywords;
+
+  let targetLessonData = lessonData.filter(i => {
+    return i.title.includes(keywords) || (i.desc || '').includes(keywords);
+  })
+  // 分页信息
+  let page = {
+    total: targetLessonData.length,
+    currentPage,
+    pageSize,
+  }
+
+  // 响应 
+  let response = {
+    page,
+    code: 1,
+    data: targetLessonData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }
+
+  ctx.response.body = response;
 })
 
 app.use(bodyparser());
@@ -43,7 +60,7 @@ app.use(router.allowedMethods());
 
   lessonData = lessonData.concat(data1, data2, data3, data4, data5);
 
-  app.listen(5000)
+  app.listen(5000);
 
 })()
 
