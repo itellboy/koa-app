@@ -11,7 +11,7 @@
   <div id="app">
     <el-row>
       <el-col :span="14" :offset="5">
-          <h3>公开教育资源搜索</h3>
+        <h3>公开教育资源搜索</h3>
         <el-input placeholder="请输入搜索关键词" v-model="keywords" @keyup.enter.native="search">
           <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
         </el-input>
@@ -31,17 +31,17 @@
     el: '#app',
     data: function () {
       return {
-        keywords:  '',
+        keywords: '',
       }
     },
-    methods:{
-      search(){
-        axios.post('/lessons', {
+    methods: {
+      search() {
+        this.keywords && axios.post('/lessons', {
           keywords: this.keywords,
           pageIndex: 1,
           pageSize: 20
-        }).then(resp =>{
-          console.log(resp.data);
+        }).then(resp => {
+          console.log(resp.data.length);
         });
 
       }

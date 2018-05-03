@@ -19,26 +19,32 @@ router.get('/', async (ctx, next) => {
 
 router.post('/lessons', async (ctx, next) => {
   ctx.type = "json";
-  console.log(ctx.request)
-  
+
   ctx.response.body = lessonData;
 })
-
 
 app.use(bodyparser());
 app.use(router.routes())
 app.use(router.allowedMethods());
 
-(async function(){
-  lessonData.concat(lessonData,await fs.readFile('mock/imooc.json', 'utf-8'));
-  lessonData.concat(lessonData,await fs.readFile('mock/icourse163.json', 'utf-8'));
-  lessonData.concat(lessonData,await fs.readFile('mock/keQq.json', 'utf-8'));
-  lessonData.concat(lessonData,await fs.readFile('mock/study163.json', 'utf-8'));
-  lessonData.concat(lessonData,await fs.readFile('mock/xuetangx.json', 'utf-8'));
-  // lessonData = await fs.readFile('mock/xuetangx.json', 'utf-8');
-  lessonData = JSON.parse(lessonData);
+(async function () {
 
-  await console.log(lessonData.length)
+  let startTime = Date.now();
+  let data1 = await fs.readFile('mock/imooc.json', 'utf-8');
+  data1 = JSON.parse(data1).data;
+  let data2 = await fs.readFile('mock/icourse163.json', 'utf-8');
+  data2 = JSON.parse(data2).data;
+  let data3 = await fs.readFile('mock/keQq.json', 'utf-8');
+  data3 = JSON.parse(data3).data;
+  let data4 = await fs.readFile('mock/study163.json', 'utf-8');
+  data4 = JSON.parse(data4).data;
+  let data5 = await fs.readFile('mock/xuetangx.json', 'utf-8');
+  data5 = JSON.parse(data5).data;
+
+  lessonData = lessonData.concat(data1, data2, data3, data4, data5);
+
+  app.listen(5000)
+
 })()
 
 
