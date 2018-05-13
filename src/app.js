@@ -8,11 +8,17 @@ const router = new Router();
 // 所有的课程数据
 let lessonData = [];
 
+/**
+ * 根目录
+ */
 router.get('/', async (ctx, next) => {
   ctx.type = 'html';
   ctx.response.body = await fs.readFile('html/index.html', 'utf8');
 });
 
+/**
+ * 搜索路由
+ */
 router.post('/lessons', async (ctx, next) => {
   ctx.type = "json";
 
@@ -60,7 +66,7 @@ app.use(router.allowedMethods());
 
   lessonData = lessonData.concat(data1, data2, data3, data4, data5);
 
-  app.listen(5000);
+  app.listen(8080);
 
 })()
 
