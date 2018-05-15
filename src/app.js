@@ -17,6 +17,54 @@ router.get('/', async (ctx, next) => {
 });
 
 /**
+ * overview
+ */
+router.get('/overview', async (ctx, next) => {
+  ctx.type = 'html';
+  ctx.response.body = await fs.readFile('html/overview.html', 'utf8');
+});
+/**
+ * 词云接口
+ */
+router.post('/getTagCloudData', async (ctx, next) => {
+  ctx.type = 'json';
+  let type = ctx.request.body.type;
+  // 获取对应平台的数据
+  let lessonData = await fs.readFile('mock/' + type + '.json', 'utf-8');
+  lessonData = JSON.parse(lessonData).data;
+  let result = [];
+  let tagCount = {};
+  if (type == 'imooc') {
+    lessonData.forEach(item => {
+      item.tags.forEach(tag => {
+        if (!tagCount[tag]) {
+          tagCount[tag] = 1;
+        } else {
+          tagCount[tag]++;
+        }
+      })
+    });
+  } else if (type == 'keQq') {
+    lessonData.forEach(item => {
+      if (!tagCount[item.provider]) {
+        tagCount[item.provider] = 1;
+      } else {
+        tagCount[item.provider]++;
+      }
+    })
+  }
+
+  for (let key in tagCount) {
+    result.push({
+      tag: key,
+      value: tagCount[key]
+    })
+  }
+
+  ctx.response.body = result;
+})
+
+/**
  * 搜索路由
  */
 router.post('/lessons', async (ctx, next) => {
@@ -26,6 +74,7 @@ router.post('/lessons', async (ctx, next) => {
   let pageSize = ctx.request.body.pageSize;
   let keywords = ctx.request.body.keywords;
 
+  // 过滤标题或者描述含有关键字的课程数据
   let targetLessonData = lessonData.filter(i => {
     return i.title.includes(keywords) || (i.desc || '').includes(keywords);
   })
@@ -45,14 +94,13 @@ router.post('/lessons', async (ctx, next) => {
 
   ctx.response.body = response;
 })
-
+// 解析body
 app.use(bodyparser());
 app.use(router.routes())
 app.use(router.allowedMethods());
 
 (async function () {
 
-  let startTime = Date.now();
   let data1 = await fs.readFile('mock/imooc.json', 'utf-8');
   data1 = JSON.parse(data1).data;
   let data2 = await fs.readFile('mock/icourse163.json', 'utf-8');

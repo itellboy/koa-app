@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,height=device-height">
+  <title>统计与分析</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+  <div id="app">
+    <el-row>
+      <el-col :span="20" :offset="2">
+        <h3 style="cursor: pointer;" onclick="location='/'">公开教育资源平台</h3>
+        <!-- <el-button plain type="primary"  onclick="location = '/'">返回</el-button> -->
+      </el-col>
+    </el-row>
+    <!-- 慕课网 -->
+    <el-row style="margin-top: 20px;">
+      <el-col :span="16" :offset="4">
+        <el-card>
+          <div slot="header">
+            <span>慕课网</span>
+            <el-button style="float: right; padding: 3px 0" onclick="window.open('https://www.imooc.com')" type="text">https://www.imooc.com</el-button>
+
+          </div>
+          <div id="imoocNode"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <!-- 腾讯课堂 -->
+    <el-row style="margin-top: 20px;">
+      <el-col :span="16" :offset="4">
+        <el-card>
+          <div slot="header">
+            <span>腾讯课堂</span>
+            <el-button style="float: right; padding: 3px 0" onclick="window.open('https://ke.qq.com')" type="text">https://ke.qq.com</el-button>
+          </div>
+          <div id="keQqNode"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+  <script>/*Fixing iframe window.innerHeight 0 issue in Safari*/document.body.clientHeight;</script>
+  <script src="https://gw.alipayobjects.com/os/antv/assets/g2/3.0.11/g2.min.js"></script>
+  <script src="https://gw.alipayobjects.com/os/antv/assets/data-set/0.8.7/data-set.min.js"></script>
+  <script src="https://gw.alipayobjects.com/os/antv/assets/lib/jquery-3.2.1.min.js"></script>
+  <script src="https://gw.alipayobjects.com/os/antv/assets/lib/lodash-4.17.4.min.js"></script>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!-- import axios -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    'use strict';
+
+    function getTextAttrs(cfg) {
+      return _.assign({}, {
+        fillOpacity: cfg.opacity,
+        fontSize: cfg.origin._origin.size,
+        rotate: cfg.origin._origin.rotate,
+        text: cfg.origin._origin.text,
+        textAlign: 'center',
+        fontFamily: cfg.origin._origin.font,
+        fill: cfg.color,
+        textBaseline: 'Alphabetic'
+      }, cfg.style);
+    }
+
+    // 给point注册一个词云的shape
+    G2.Shape.registerShape('point', 'cloud', {
+      drawShape: function drawShape(cfg, container) {
+        var attrs = getTextAttrs(cfg);
+        return container.addShape('text', {
+          attrs: _.assign(attrs, {
+            x: cfg.x,
+            y: cfg.y
+          })
+        });
+      }
+    });
+
+    function render(data, type) {
+      var dv = new DataSet.View().source(data);
+      var range = dv.range('value');
+      // 权重范围
+      var min = range[0];
+      var max = range[1];
+      dv.transform({
+        type: 'tag-cloud',
+        fields: ['tag', 'value'],
+        size: [window.innerWidth / 3 * 2 - 40, window.innerHeight / 2],
+        font: 'Verdana',
+        padding: 0,
+        timeInterval: 5000, // max execute time
+        rotate: function rotate() {
+          var random = ~~(Math.random() * 4) % 4;
+          if (random == 2) {
+            random = 0;
+          }
+          return random * 90; // 0, 90, 270
+        },
+        fontSize: function fontSize(d) {
+          if (d.value) {
+            return (d.value - min) / (max - min) * (80 - 24) + 24;
+          }
+          return 0;
+        }
+      });
+      var chart = new G2.Chart({
+        container: type + 'Node',
+        width: window.innerWidth / 3 * 2 - 40,
+        height: window.innerHeight / 2,
+        padding: 0
+      });
+      chart.source(dv, {
+        x: { nice: false },
+        y: { nice: false }
+      });
+      chart.legend(false);
+      chart.axis(false);
+      chart.tooltip({
+        showTitle: false
+      });
+      chart.coord().reflect();
+      chart.point().position('x*y').color('tag').shape('cloud').tooltip('value*tag');
+      chart.render();
+    }
+
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+
+        }
+      },
+      methods: {
+
+      },
+      mounted() {
+        // 慕课网
+        axios.post('/getTagCloudData', {
+          type: 'imooc'
+        }).then(resp => {
+          if (resp.status == 200) {
+            render(resp.data, 'imooc');
+          }
+        });
+        // 腾讯课堂
+        axios.post('/getTagCloudData', {
+          type: 'keQq'
+        }).then(resp => {
+          if (resp.status == 200) {
+            render(resp.data, 'keQq');
+          }
+        });
+      }
+    })
+
+
+  </script>
+</body>
+
+</html>

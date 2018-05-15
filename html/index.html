@@ -11,7 +11,7 @@
   <div id="app">
     <el-row>
       <el-col :span="20" :offset="2">
-        <h3>公开教育资源搜索</h3>
+        <h3 style="cursor: pointer;" onclick="location.reload()">公开教育资源平台</h3>
         <el-input placeholder="请输入搜索关键词" v-model="keywords" @keyup.enter.native="search" clearable>
           <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
           <el-button slot="append" icon="el-icon-refresh" @click="refresh"></el-button>
@@ -23,6 +23,7 @@
         <el-card>
           <div slot="header">
             <span>课程信息</span>
+            <el-button style="float: right;" size="mini" type="primary" @click="overview()">统计分析</el-button>
           </div>
           <!-- 分页 -->
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes"
@@ -96,6 +97,9 @@
       }
     },
     methods: {
+      overview() {
+        location = '/overview';
+      },
       // 搜索
       search() {
         this.currentPage = 1;
