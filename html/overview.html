@@ -126,10 +126,14 @@
       // 权重范围
       var min = range[0];
       var max = range[1];
+      let size = [window.innerWidth / 5 * 4 - 20, window.innerHeight];
+      if (type == 'imooc') {
+        size = [window.innerWidth / 5 * 4 - 20, window.innerHeight / 2]
+      }
       dv.transform({
         type: 'tag-cloud',
         fields: ['tag', 'value'],
-        size: [window.innerWidth / 5 * 4 - 20, window.innerHeight * 4],
+        size: size,
         font: 'Verdana',
         padding: 0,
         timeInterval: 5000, // max execute time
@@ -149,8 +153,8 @@
       });
       var chart = new G2.Chart({
         container: type + 'Node',
-        width: window.innerWidth / 5 * 4 - 20,
-        height: window.innerHeight * 4,
+        width: size[0],
+        height: size[1],
         padding: 0
       });
       chart.source(dv, {

@@ -61,12 +61,14 @@ router.post('/getTagCloudData', async (ctx, next) => {
       }
     })
   }
-
+  // 过滤数量为4以下的
   for (let key in tagCount) {
-    result.push({
-      tag: key,
-      value: tagCount[key]
-    })
+    if (tagCount[key] > 3) {
+      result.push({
+        tag: key,
+        value: tagCount[key]
+      })
+    }
   }
 
   ctx.response.body = result;
