@@ -28,7 +28,7 @@
         <el-card>
           <div slot="header">
             <span>课程信息</span>
-            <el-button style="float: right;" size="mini" type="primary" @click="overview()" plain>统计分析</el-button>
+            <el-button style="float: right;" size="mini" type="primary" @click="overview()" plain>词云统计</el-button>
           </div>
           <!-- 分页 -->
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes"
@@ -164,7 +164,6 @@
 </script>
 <script>
   'use strict';
-  // var data = [{ item: '事例一', count: 100 }, { item: '事例二', count: 21 }, { item: '事例三', count: 17 }, { item: '事例四', count: 13 }, { item: '事例五', count: 9 }];
   var _DataSet = DataSet,
     DataView = _DataSet.DataView;
   var dv = new DataView();
@@ -195,8 +194,6 @@
     lineWidth: 1,
     stroke: '#fff'
   });
-
-
   function render(data) {
     dv.source(data).transform({
       type: 'percent',
@@ -204,7 +201,6 @@
       dimension: 'item',
       as: 'percent'
     });
-
     chart.source(dv, {
       percent: {
         formatter: function formatter(val) {
@@ -213,12 +209,8 @@
         }
       }
     });
-
     chart.render();
   }
-
-  // render(data);
-
 </script>
 
 </html>
