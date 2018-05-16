@@ -52,6 +52,14 @@ router.post('/getTagCloudData', async (ctx, next) => {
         tagCount[item.provider]++;
       }
     })
+  } else if (type == 'xuetangx' || type == 'icourse163') {
+    lessonData.forEach(item => {
+      if (!tagCount[item.university]) {
+        tagCount[item.university] = 1;
+      } else {
+        tagCount[item.university]++;
+      }
+    })
   }
 
   for (let key in tagCount) {

@@ -29,6 +29,18 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 中国大学IMOOC -->
+    <el-row style="margin-top: 20px;">
+      <el-col :span="20" :offset="2">
+        <el-card>
+          <div slot="header">
+            <span>中国大学IMOOC</span>
+            <el-button style="float: right; padding: 3px 0" onclick="window.open('https://www.icourse163.org/')" type="text">https://www.icourse163.org/</el-button>
+          </div>
+          <div id="icourse163Node"></div>
+        </el-card>
+      </el-col>
+    </el-row>
     <!-- 腾讯课堂 -->
     <el-row style="margin-top: 20px;">
       <el-col :span="20" :offset="2">
@@ -53,6 +65,20 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 学堂在线 -->
+    <el-row style="margin-top: 20px;">
+      <el-col :span="20" :offset="2">
+        <el-card>
+          <div slot="header">
+            <span>学堂在线</span>
+            <el-button style="float: right; padding: 3px 0" onclick="window.open('http://www.xuetangx.com')" type="text">http://www.xuetangx.com</el-button>
+          </div>
+          <div id="xuetangxNode"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
   </div>
   <script>/*Fixing iframe window.innerHeight 0 issue in Safari*/document.body.clientHeight;</script>
   <script src="https://gw.alipayobjects.com/os/antv/assets/g2/3.0.11/g2.min.js"></script>
@@ -103,7 +129,7 @@
       dv.transform({
         type: 'tag-cloud',
         fields: ['tag', 'value'],
-        size: [window.innerWidth / 5 * 4 - 20, window.innerHeight / 2],
+        size: [window.innerWidth / 5 * 4 - 20, window.innerHeight * 4],
         font: 'Verdana',
         padding: 0,
         timeInterval: 5000, // max execute time
@@ -124,7 +150,7 @@
       var chart = new G2.Chart({
         container: type + 'Node',
         width: window.innerWidth / 5 * 4 - 20,
-        height: window.innerHeight / 2,
+        height: window.innerHeight * 4,
         padding: 0
       });
       chart.source(dv, {
@@ -158,11 +184,13 @@
       },
       mounted() {
         this.fullscreenLoading = true;
-        axios.all([this.getJsonData('imooc'), this.getJsonData('keQq'), this.getJsonData('study163')])
-          .then(axios.spread((imoocRes, keQqRes, study163Res) => {
+        axios.all([this.getJsonData('imooc'), this.getJsonData('keQq'), this.getJsonData('study163'), this.getJsonData('xuetangx'), this.getJsonData('icourse163')])
+          .then(axios.spread((imoocRes, keQqRes, study163Res, xuetangxRes, icourse163Res) => {
             render(imoocRes.data, 'imooc');
             render(keQqRes.data, 'keQq');
             render(study163Res.data, 'study163');
+            render(xuetangxRes.data, 'xuetangx');
+            render(icourse163Res.data, 'icourse163');
 
             this.fullscreenLoading = false;
           })).catch(e => {
