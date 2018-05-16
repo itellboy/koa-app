@@ -44,7 +44,7 @@ router.post('/getTagCloudData', async (ctx, next) => {
         }
       })
     });
-  } else if (type == 'keQq') {
+  } else if (type == 'keQq' || type == 'study163') {
     lessonData.forEach(item => {
       if (!tagCount[item.provider]) {
         tagCount[item.provider] = 1;

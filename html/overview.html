@@ -10,7 +10,7 @@
 
 <body>
   <div id="app">
-    <el-row>
+    <el-row v-loading.fullscreen.lock="fullscreenLoading">
       <el-col :span="20" :offset="2">
         <h3 style="cursor: pointer;" onclick="location='/'">公开教育资源平台</h3>
         <!-- <el-button plain type="primary"  onclick="location = '/'">返回</el-button> -->
@@ -18,7 +18,7 @@
     </el-row>
     <!-- 慕课网 -->
     <el-row style="margin-top: 20px;">
-      <el-col :span="16" :offset="4">
+      <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
             <span>慕课网</span>
@@ -31,13 +31,25 @@
     </el-row>
     <!-- 腾讯课堂 -->
     <el-row style="margin-top: 20px;">
-      <el-col :span="16" :offset="4">
+      <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
             <span>腾讯课堂</span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('https://ke.qq.com')" type="text">https://ke.qq.com</el-button>
           </div>
           <div id="keQqNode"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <!-- 网易云课堂 -->
+    <el-row style="margin-top: 20px;">
+      <el-col :span="20" :offset="2">
+        <el-card>
+          <div slot="header">
+            <span>网易云课堂</span>
+            <el-button style="float: right; padding: 3px 0" onclick="window.open('http://study.163.com/')" type="text">http://study.163.com/</el-button>
+          </div>
+          <div id="study163Node"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -91,7 +103,7 @@
       dv.transform({
         type: 'tag-cloud',
         fields: ['tag', 'value'],
-        size: [window.innerWidth / 3 * 2 - 40, window.innerHeight / 2],
+        size: [window.innerWidth / 5 * 4 - 20, window.innerHeight / 2],
         font: 'Verdana',
         padding: 0,
         timeInterval: 5000, // max execute time
@@ -111,7 +123,7 @@
       });
       var chart = new G2.Chart({
         container: type + 'Node',
-        width: window.innerWidth / 3 * 2 - 40,
+        width: window.innerWidth / 5 * 4 - 20,
         height: window.innerHeight / 2,
         padding: 0
       });
@@ -133,32 +145,31 @@
       el: '#app',
       data() {
         return {
-
+          fullscreenLoading: false
         }
       },
       methods: {
-
+        // 得到数据
+        getJsonData(type) {
+          return axios.post('/getTagCloudData', {
+            type: type
+          })
+        },
       },
       mounted() {
-        // 慕课网
-        axios.post('/getTagCloudData', {
-          type: 'imooc'
-        }).then(resp => {
-          if (resp.status == 200) {
-            render(resp.data, 'imooc');
-          }
-        });
-        // 腾讯课堂
-        axios.post('/getTagCloudData', {
-          type: 'keQq'
-        }).then(resp => {
-          if (resp.status == 200) {
-            render(resp.data, 'keQq');
-          }
-        });
+        this.fullscreenLoading = true;
+        axios.all([this.getJsonData('imooc'), this.getJsonData('keQq'), this.getJsonData('study163')])
+          .then(axios.spread((imoocRes, keQqRes, study163Res) => {
+            render(imoocRes.data, 'imooc');
+            render(keQqRes.data, 'keQq');
+            render(study163Res.data, 'study163');
+
+            this.fullscreenLoading = false;
+          })).catch(e => {
+            console.log(e)
+          })
       }
     })
-
 
   </script>
 </body>
