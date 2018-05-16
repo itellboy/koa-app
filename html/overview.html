@@ -12,7 +12,7 @@
   <div id="app">
     <el-row v-loading.fullscreen.lock="fullscreenLoading">
       <el-col :span="20" :offset="2">
-        <h3 style="cursor: pointer;" onclick="location='/'">公开教育资源平台</h3>
+        <h3 style="cursor: pointer;" onclick="location='/'">公开教育资源平台（词云）</h3>
         <!-- <el-button plain type="primary"  onclick="location = '/'">返回</el-button> -->
       </el-col>
     </el-row>
@@ -21,7 +21,9 @@
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
-            <span>慕课网</span>
+            <span>慕课网
+              <el-tag size="mini" type="primary">标签分布</el-tag>
+            </span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('https://www.imooc.com')" type="text">https://www.imooc.com</el-button>
 
           </div>
@@ -34,7 +36,9 @@
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
-            <span>中国大学IMOOC</span>
+            <span>中国大学IMOOC
+              <el-tag size="mini" type="primary">所属学校分布</el-tag>
+            </span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('https://www.icourse163.org/')" type="text">https://www.icourse163.org/</el-button>
           </div>
           <div id="icourse163Node"></div>
@@ -46,7 +50,10 @@
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
-            <span>腾讯课堂</span>
+            <span>腾讯课堂
+              <el-tag size="mini" type="primary">所属机构分布</el-tag>
+            </span>
+            </span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('https://ke.qq.com')" type="text">https://ke.qq.com</el-button>
           </div>
           <div id="keQqNode"></div>
@@ -58,7 +65,10 @@
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
-            <span>网易云课堂</span>
+            <span>网易云课堂
+              <el-tag size="mini" type="primary">所属机构分布</el-tag>
+            </span>
+            </span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('http://study.163.com/')" type="text">http://study.163.com/</el-button>
           </div>
           <div id="study163Node"></div>
@@ -71,7 +81,9 @@
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
-            <span>学堂在线</span>
+            <span>学堂在线
+              <el-tag size="mini" type="primary">所属学校分布</el-tag>
+            </span>
             <el-button style="float: right; padding: 3px 0" onclick="window.open('http://www.xuetangx.com')" type="text">http://www.xuetangx.com</el-button>
           </div>
           <div id="xuetangxNode"></div>

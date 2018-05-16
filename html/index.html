@@ -18,12 +18,17 @@
         </el-input>
       </el-col>
     </el-row>
-    <el-row style="margin-top: 20px;">
+    <el-row style="margin-top: 20px" :gutter="20">
+      <el-col :span="12" :offset="6">
+        <div id="mountNode"></div>
+      </el-col>
+    </el-row>
+    <el-row>
       <el-col :span="20" :offset="2">
         <el-card>
           <div slot="header">
             <span>课程信息</span>
-            <el-button style="float: right;" size="mini" type="primary" @click="overview()">统计分析</el-button>
+            <el-button style="float: right;" size="mini" type="primary" @click="overview()" plain>统计分析</el-button>
           </div>
           <!-- 分页 -->
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes"
@@ -33,6 +38,7 @@
           <el-table :data="lessonData" style="width: 100%" v-loading="loading" stripe>
             <el-table-column type="index"></el-table-column>
             <el-table-column prop="title" label="标题"></el-table-column>
+            <el-table-column prop="number" sortable label="学习人数"></el-table-column>
             <el-table-column prop="source" label="平台" :filters="filters" :filter-method="filterHandler">
               <template slot-scope="scope">
                 <el-tag size="mini" type="primary" v-if="scope.row.source == 'icourse163'">中国大学MOOC</el-tag>
@@ -43,7 +49,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="desc" label="简述"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="GO">
               <template slot-scope="scope">
                 <el-button size="mini" @click="handleOperate(scope.row, 'goLesson')" type="primary" plain>GO</el-button>
               </template>
@@ -58,13 +64,15 @@
     </el-row>
   </div>
 </body>
+<script>/*Fixing iframe window.innerHeight 0 issue in Safari*/document.body.clientHeight;</script>
+<script src="https://gw.alipayobjects.com/os/antv/assets/g2/3.0.11/g2.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/assets/data-set/0.8.7/data-set.min.js"></script>
 <!-- import Vue before Element -->
 <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <!-- import axios -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 <script>
   new Vue({
     el: '#app',
@@ -143,8 +151,9 @@
           pageSize: this.pageSize
         }).then(resp => {
           this.loading = false;
-          this.total = resp.data.page.total
-          this.lessonData = resp.data.data
+          this.total = resp.data.page.total;
+          this.lessonData = resp.data.data;
+          render(resp.data.percentDataArr);
         });
       }
     },
@@ -152,6 +161,64 @@
       this.loadData();
     }
   })
+</script>
+<script>
+  'use strict';
+  // var data = [{ item: '事例一', count: 100 }, { item: '事例二', count: 21 }, { item: '事例三', count: 17 }, { item: '事例四', count: 13 }, { item: '事例五', count: 9 }];
+  var _DataSet = DataSet,
+    DataView = _DataSet.DataView;
+  var dv = new DataView();
+  var chart = new G2.Chart({
+    container: 'mountNode',
+    forceFit: true,
+    height: window.innerHeight / 2
+  });
+
+  chart.coord('theta', {
+    radius: 0.75
+  });
+  chart.tooltip({
+    showTitle: false,
+    itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
+  });
+  chart.intervalStack().position('percent').color('item').label('count', {
+    formatter: function formatter(val, item) {
+      return item.point.item + ': ' + val;
+    }
+  }).tooltip('item*percent', function (item, percent) {
+    percent = percent * 100 + '%';
+    return {
+      name: item,
+      value: percent
+    };
+  }).style({
+    lineWidth: 1,
+    stroke: '#fff'
+  });
+
+
+  function render(data) {
+    dv.source(data).transform({
+      type: 'percent',
+      field: 'count',
+      dimension: 'item',
+      as: 'percent'
+    });
+
+    chart.source(dv, {
+      percent: {
+        formatter: function formatter(val) {
+          val = val * 100 + '%';
+          return val;
+        }
+      }
+    });
+
+    chart.render();
+  }
+
+  // render(data);
+
 </script>
 
 </html>

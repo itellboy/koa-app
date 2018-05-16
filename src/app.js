@@ -7,6 +7,14 @@ const app = new Koa();
 const router = new Router();
 // 所有的课程数据
 let lessonData = [];
+// 平台映射
+let moocMap = {
+  icourse163: '中国大学MOOC',
+  imooc: '慕课网',
+  keQq: '腾讯课堂',
+  study163: '网易云课堂',
+  xuetangx: '学堂在线'
+}
 
 /**
  * 根目录
@@ -94,12 +102,25 @@ router.post('/lessons', async (ctx, next) => {
     currentPage,
     pageSize,
   }
+  // 统计信息
+  let percentDataArr = [];
+  let percentDataObj = {};
+  targetLessonData.forEach(item => {
+    percentDataObj[item.source] ? (percentDataObj[item.source]++) : (percentDataObj[item.source] = 1);
+  })
+  for (let key in percentDataObj) {
+    percentDataArr.push({
+      item: moocMap[key],
+      count: percentDataObj[key]
+    })
+  }
 
   // 响应 
   let response = {
     page,
     code: 1,
-    data: targetLessonData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    data: targetLessonData.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    percentDataArr: percentDataArr
   }
 
   ctx.response.body = response;
@@ -110,7 +131,7 @@ app.use(router.routes())
 app.use(router.allowedMethods());
 
 (async function () {
-
+  let startTime = Date.now();
   let data1 = await fs.readFile('mock/imooc.json', 'utf-8');
   data1 = JSON.parse(data1).data;
   let data2 = await fs.readFile('mock/icourse163.json', 'utf-8');
@@ -123,6 +144,10 @@ app.use(router.allowedMethods());
   data5 = JSON.parse(data5).data;
 
   lessonData = lessonData.concat(data1, data2, data3, data4, data5);
+  lessonData = lessonData.sort((a, b) => {
+    return b.number - a.number
+  })
+  console.log('初始化成功 ' + (Date.now() - startTime));
 
   app.listen(8080);
 
